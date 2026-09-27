@@ -11,7 +11,7 @@ The full product plan is in [`docs/PLAN.md`](docs/PLAN.md).
 - **Schools.** Course grid filtered by school, with search. Each course page shows its syllabus and progress, and a Start/Resume button.
 - **Lesson page.** YouTube player with our own controls and a faint name tag, the syllabus rail, previous/up next, and private notes that autosave.
 - **Watch verification.** A lesson completes only after **80 % of it is genuinely watched**. Skipping ahead earns nothing, XP is awarded once, and un-ticking a lesson sticks.
-- **Supabase backend.** Invite-only sign-in (email magic link or Google), row-level security on every table, and the progress rules enforced inside the database.
+- **Supabase backend.** Invite-only sign-in (every account needs an invite) (email magic link or Google), row-level security on every table, and the progress rules enforced inside the database.
 
 - **Studio** (`/admin`, admins only):
   - Create courses and put them in a school.
@@ -42,7 +42,7 @@ Without Supabase keys the app runs in **demo mode** with sample courses. To prev
 2. Under **Authentication → Providers**, enable Email (magic link) and Google.
 3. Under **Authentication → URL configuration**, add `https://<your-site>/auth/callback`.
 4. Copy `.env.example` to `.env.local` and fill in the URL and anon key. Do the same in Vercel's environment variables.
-5. **Pooja signs in first.** The first account ever created becomes the admin. After that, invite staff from **Team**. Send them the sign-in link on WhatsApp; only invited emails can get in.
+5. **Invite the first admin** in the SQL editor: `insert into public.invites (email, full_name, role) values ('you@example.com', 'Pooja', 'admin');`. Every account, the admin's included, needs an invite. After that, invite staff from **Team** and send them the sign-in link on WhatsApp.
 
 ## Adding a training video (for Pooja)
 
@@ -57,3 +57,11 @@ Unlisted videos can still be watched by anyone who has the link. The name tag on
 ```bash
 npm run lint && npm run typecheck && npm test && npm run build
 ```
+
+## Live setup
+
+| | |
+|---|---|
+| Site | https://wrapitup-university.vercel.app (Vercel project `wrapitup-university`, team Chef, region Mumbai) |
+| Database | Supabase project `LMS---WRAPITUPBYPOOJA` (`ireaxgfdbyhktelanjtp`, Mumbai) |
+| Deploys | Every push to GitHub builds on Vercel. `main` goes to the live site; other branches get preview links that need a Vercel login |

@@ -4,7 +4,7 @@ The private training university for the **WrapItUpByPooja** team: wrapping and p
 
 The full product plan is in [`docs/PLAN.md`](docs/PLAN.md).
 
-## What works today (Phases 1–2)
+## What works today (Phases 1–2 and 4)
 
 - **App shell.** Top navigation pills, "Search anything" (⌘K), notifications bell, avatar menu (with admin links for Pooja and trainers), and a bottom tab bar on phones.
 - **Dashboard.** Pinned announcement, hero with day streak and greeting, *Your first week* checklist, *Pick up where you left off*, stat tiles, learning-activity chart, *Upcoming* live sessions, leaderboard (All / My team), Wrap-of-the-Week card.
@@ -24,6 +24,18 @@ The full product plan is in [`docs/PLAN.md`](docs/PLAN.md).
   - Invite staff by email with a role and department.
   - See who's Active, Idle, Stalled, Dormant or Never started, and how many lessons each person has done.
   - Change roles and switch off access when someone leaves; their progress is kept. Trainers can see the list but not change it.
+
+- **Quizzes.** Optional, one per lesson: questions or WhatsApp-style customer scenarios.
+  - Each answer can have its own feedback, and each question an explanation.
+  - A required quiz locks the next module until it's passed, and the database enforces it.
+  - The answer key never reaches the browser. Retries are unlimited and every attempt is kept.
+- **“Show your wrap” practicals.**
+  - Staff upload up to 5 photos, resized on the phone to about 300 KB each and stored privately. They can add a video link and a note.
+  - Trainers score each point from 1 to 5 in **Reviews** (`/admin/reviews`), then approve or ask for a redo with a comment.
+  - The learner sees the scores and comment, and resubmits if needed.
+- **Certificates.** Finishing every lesson, required quiz and practical issues one certificate (`WIU-XXXX-XXXX`) with a public check page (`/verify/<code>`) and an A4 PDF.
+  - A **My profile** page lists certificates and XP.
+  - The dashboard shows **Pending for you**, and the bell shows reviews and the trainer queue.
 
 Programs, Showcase, Live, SOP Library and the remaining admin pages are placeholders that say which phase delivers them.
 

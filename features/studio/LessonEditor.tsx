@@ -4,6 +4,8 @@ import { useAction } from '@/components/ui/useAction';
 import type { StudioLesson } from '@/lib/admin';
 import { clock } from '@/lib/format';
 import { updateLesson } from './actions';
+import { PracticalEditor } from './PracticalEditor';
+import { QuizEditor } from './QuizEditor';
 import { VideoField } from './VideoField';
 
 export function LessonEditor({ lesson, onClose }: { lesson: StudioLesson; onClose: () => void }) {
@@ -22,8 +24,9 @@ export function LessonEditor({ lesson, onClose }: { lesson: StudioLesson; onClos
   const p = `le-${lesson.id}`;
 
   return (
+    <div className="lesson-editor">
     <form
-      className="lesson-editor form"
+      className="form"
       onSubmit={(e) => {
         e.preventDefault();
         run(() => updateLesson({ id: lesson.id, ...f }), onClose);
@@ -114,9 +117,20 @@ export function LessonEditor({ lesson, onClose }: { lesson: StudioLesson; onClos
           {pending ? 'Saving…' : 'Save lesson'}
         </button>
         <button className="btn btn-ghost" type="button" onClick={onClose}>
-          Cancel
+          Close
         </button>
       </div>
     </form>
+      <details className="editor-section" open={!!lesson.quiz}>
+        <summary>
+          📝 Quiz {lesson.quiz ? `· ${lesson.quiz.questions.length} ${lesson.quiz.questions.length === 1 ? 'question' : 'questions'} · pass ${lesson.quiz.passPct}%` : '· none yet'}
+        </summary>
+        <QuizEditor lessonId={lesson.id} quiz={lesson.quiz} />
+      </details>
+      <details className="editor-section" open={!!lesson.practical}>
+        <summary>📷 “Show your wrap” practical {lesson.practical ? '· set' : '· none yet'}</summary>
+        <PracticalEditor lessonId={lesson.id} practical={lesson.practical} />
+      </details>
+    </div>
   );
 }

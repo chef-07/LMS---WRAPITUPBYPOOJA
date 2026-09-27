@@ -38,3 +38,15 @@ export function dbError(err: { code?: string; message: string }): { ok: false; e
   console.error(err);
   return fail('Could not save. Try again.');
 }
+
+/** Runs a server action for any signed-in, active team member. */
+export async function asMember<T>(fn: (ctx: Ctx) => Promise<ActionResult<T>>): Promise<ActionResult<T>> {
+  const viewer = await getViewer();
+  if (!viewer) return fail('Sign in again to continue.');
+  try {
+    return await fn({ sb: await supabaseServer(), viewer });
+  } catch (e) {
+    console.error(e);
+    return fail('Something went wrong. Try again.');
+  }
+}

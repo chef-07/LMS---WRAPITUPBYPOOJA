@@ -213,7 +213,7 @@ supabase/migrations, supabase/seed.sql   # seed: 6 schools, sample courses, demo
 1. ✅ **Foundation.** Next.js scaffold, bright tokens, app shell (top bar, PageHeader, rail, bottom nav), Supabase project + auth (invite-only, magic link + Google), `users`/`invites`, admin Team page (invite, role, department, disable).
 2. ✅ **Courses + YouTube.** Schools/courses/modules/lessons, admin Studio with YouTube paste box, course grid, course page, lesson page with YouTubePlayer + watermark + progress/watch verification, resume, Notes/Files tabs.
 3. **Dashboard.** Hero, first-week checklist, resume rail, stat tiles, activity chart, Upcoming, Leaderboard, XP/streak events + rollup cron.
-4. **Assessment.** Quizzes (MCQ + scenario, pass gates), assignments + submissions + Reviews queue with rubric, module locking, certificates + `/verify`.
+4. ✅ **Assessment.** Quizzes (MCQ + scenario, pass gates), assignments + submissions + Reviews queue with rubric, module locking, certificates + `/verify`.
 5. **University structure.** Programs/levels, cohorts + drip, skills + Skill Matrix, campaigns.
 6. **Team life.** SOP library, announcements, Wrap of the Week + Showcase, live sessions, lesson discussion, notifications + email nudges, badges.
 7. **Polish.** Reports + CSV export, global search, PWA, accessibility and mobile pass, seed content, README handover guide for Pooja (how to upload unlisted videos and paste links).

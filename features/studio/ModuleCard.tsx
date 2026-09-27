@@ -159,6 +159,8 @@ function LessonRow({ lesson: l, first, last, open, onToggle }: { lesson: StudioL
             {l.durationSeconds ? clock(l.durationSeconds) : 'length unknown'} ·{' '}
             {l.completionMode === 'watch' ? `watch ${Math.round(l.minWatchPct * 100)}%` : 'learner ticks'}
             {!l.isPublished && ' · hidden'}
+            {l.quiz && ` · 📝 quiz (${l.quiz.questions.length})`}
+            {l.practical && ' · 📷 practical'}
           </div>
         </div>
         {!l.isPublished && <span className="chip draft">Hidden</span>}

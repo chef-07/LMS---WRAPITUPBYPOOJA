@@ -38,7 +38,7 @@ export default async function LessonPage({ params }: Params) {
           </div>
         }
       />
-      <LessonView key={data.lesson.id} data={data} demo={isDemo} watermark={`${viewer.fullName} · ${viewer.email}`} />
+      <LessonView key={data.lesson.id} data={data} demo={isDemo} watermark={`${viewer.fullName} · ${viewer.email}`} viewerId={viewer.id} />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { getBellItems } from '@/lib/assessment';
 import { getCatalogue } from '@/lib/data';
 import { isDemo } from '@/lib/supabase/config';
 import type { Viewer } from '@/lib/types';
@@ -10,7 +11,7 @@ import { TopNav } from './TopNav';
 import { UserMenu } from './UserMenu';
 
 export async function AppShell({ viewer, children }: { viewer: Viewer; children: ReactNode }) {
-  const { schools, courses } = await getCatalogue();
+  const [{ schools, courses }, bell] = await Promise.all([getCatalogue(), getBellItems(viewer)]);
   const index: SearchEntry[] = [
     ...schools.map((s) => ({ group: 'Schools' as const, title: `${s.emoji} ${s.name}`, sub: s.blurb, href: `/schools?school=${s.slug}` })),
     ...courses.map((c) => ({ group: 'Courses' as const, title: c.title, sub: c.summary, href: `/schools/${c.slug}` })),
@@ -27,7 +28,7 @@ export async function AppShell({ viewer, children }: { viewer: Viewer; children:
           <TopNav />
           <div className="topbar-actions">
             <GlobalSearch index={index} />
-            <NotificationBell items={[]} />
+            <NotificationBell items={bell} />
             <UserMenu viewer={viewer} demo={isDemo} />
           </div>
         </header>

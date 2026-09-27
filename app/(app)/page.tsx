@@ -8,6 +8,7 @@ import { ContinueRail } from '@/features/dashboard/ContinueRail';
 import { FirstWeek } from '@/features/dashboard/FirstWeek';
 import { Hero } from '@/features/dashboard/Hero';
 import { Leaderboard } from '@/features/dashboard/Leaderboard';
+import { Pending } from '@/features/dashboard/Pending';
 import { Upcoming } from '@/features/dashboard/Upcoming';
 import { getDashboard } from '@/lib/data';
 import { minutesLabel } from '@/lib/format';
@@ -52,6 +53,7 @@ export default async function DashboardPage() {
       <div className="content">
         <div className="col">
           <FirstWeek steps={d.firstWeek} />
+          <Pending items={d.pending} />
           <ContinueRail courses={d.continueCourses} />
           <div className="grid-4">
             <StatTile icon={BookCheck} tone="turquoise" value={d.stats.lessonsFinished} label="Lessons finished" />

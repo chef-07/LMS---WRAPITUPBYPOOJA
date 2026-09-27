@@ -1,5 +1,5 @@
 'use client';
-import { CheckCircle2, ChevronLeft, ChevronRight, Circle, ClipboardList, FileText, MessageCircle, NotebookPen, PlayCircle } from 'lucide-react';
+import { Camera, CheckCircle2, ChevronLeft, ChevronRight, Circle, FileText, Lock, MessageCircle, NotebookPen, PlayCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { EmptyState } from '@/components/ui/primitives';
@@ -15,11 +15,15 @@ import {
   type ProgressState,
 } from '@/lib/progress';
 import type { LessonPageData } from '@/lib/types';
+import { CourseStatus } from './CourseStatus';
+import { LessonQuiz } from './LessonQuiz';
+import { Practical } from './Practical';
 
 type Tab = 'notes' | 'files' | 'discussion' | 'assignment';
 
-export function LessonView({ data, demo, watermark }: { data: LessonPageData; demo: boolean; watermark: string }) {
-  const { course, lesson, prev, next } = data;
+export function LessonView({ data, demo, watermark, viewerId }: { data: LessonPageData; demo: boolean; watermark: string; viewerId: string }) {
+  const { course, lesson, prev, next, quiz, practical, assessment } = data;
+  const lockedBy = assessment.lockedBy[lesson.id] ?? null;
   const [duration, setDuration] = useState(lesson.durationSeconds);
   const rules: LessonRules = { durationSeconds: duration, completionMode: lesson.completionMode, minWatchPct: lesson.minWatchPct };
   const rulesRef = useRef(rules);
@@ -29,7 +33,7 @@ export function LessonView({ data, demo, watermark }: { data: LessonPageData; de
 
   const [state, setState] = useState<ProgressState>(data.progress);
   const [message, setMessage] = useState<string | null>(null);
-  const [tab, setTab] = useState<Tab>('notes');
+  const [tab, setTab] = useState<Tab>(practical?.submissions[0]?.status === 'redo' ? 'assignment' : 'notes');
 
   const api = `/api/lessons/${lesson.id}`;
 
@@ -88,6 +92,18 @@ export function LessonView({ data, demo, watermark }: { data: LessonPageData; de
   return (
     <div className="content">
       <div className="col">
+        {lockedBy ? (
+          <div className="lock-gate">
+            <div>
+              <Lock size={36} color="var(--violet)" aria-hidden="true" />
+              <h3 style={{ margin: '8px 0 4px' }}>This lesson is locked</h3>
+              <p className="muted" style={{ margin: 0, maxWidth: 420 }}>
+                Pass the quiz in <b>{lockedBy}</b> to unlock it. Quizzes are in the right-hand column of that module’s lessons.
+              </p>
+            </div>
+          </div>
+        ) : (
+        <>
         {lesson.videoId ? (
           <YouTubePlayer
             videoId={lesson.videoId}
@@ -148,7 +164,7 @@ export function LessonView({ data, demo, watermark }: { data: LessonPageData; de
                 ['notes', 'Notes', NotebookPen],
                 ['files', 'Files', FileText],
                 ['discussion', 'Discussion', MessageCircle],
-                ['assignment', 'Assignment', ClipboardList],
+                ['assignment', practical ? 'Practical •' : 'Practical', Camera],
               ] as const
             ).map(([key, label, Icon]) => (
               <button key={key} type="button" role="tab" className="tab" aria-selected={tab === key} onClick={() => setTab(key)}>
@@ -161,10 +177,17 @@ export function LessonView({ data, demo, watermark }: { data: LessonPageData; de
             {tab === 'notes' && <Notes lessonId={lesson.id} demo={demo} />}
             {tab === 'files' && <EmptyState icon={FileText} title="No files for this lesson" body="Material lists, templates and price sheets attached to this lesson will appear here." />}
             {tab === 'discussion' && <EmptyState icon={MessageCircle} title="Ask a question" body="Lesson Q&A arrives with the Team Life phase. For now, ask your trainer on the team group." />}
-            {tab === 'assignment' && <EmptyState icon={ClipboardList} title="No practical for this lesson" body="When a lesson has a “Show your wrap” practical, you'll upload a photo here and a trainer reviews it." />}
+            {tab === 'assignment' &&
+              (practical ? (
+                <Practical practical={practical} viewerId={viewerId} demo={demo} />
+              ) : (
+                <EmptyState icon={Camera} title="No practical for this lesson" body="When a lesson has a “Show your wrap” practical, you’ll upload photos here and a trainer reviews them." />
+              ))}
           </div>
         </div>
         {lesson.summary && <p className="muted">{lesson.summary}</p>}
+        </>
+        )}
       </div>
 
       <aside className="col rail" aria-label="Course syllabus">
@@ -182,12 +205,35 @@ export function LessonView({ data, demo, watermark }: { data: LessonPageData; de
               <div className="syllabus-mod">{m.title}</div>
               {m.lessons.map((l) => {
                 const done = l.id === lesson.id ? state.completed : l.completed;
+                const locked = !!assessment.lockedBy[l.id];
+                const q = assessment.quizByLesson[l.id];
+                const pr = assessment.practicalByLesson[l.id];
                 return (
-                  <Link key={l.id} href={`/learn/${course.slug}/${l.slug}`} className="syllabus-row" aria-current={l.id === lesson.id ? 'page' : undefined}>
+                  <Link
+                    key={l.id}
+                    href={`/learn/${course.slug}/${l.slug}`}
+                    className={`syllabus-row${locked ? ' locked' : ''}`}
+                    aria-current={l.id === lesson.id ? 'page' : undefined}
+                  >
                     <span className={`tick${done ? ' on' : ''}`} aria-hidden="true">
-                      {done && <CheckCircle2 size={12} strokeWidth={3} />}
+                      {locked ? <Lock size={10} /> : done && <CheckCircle2 size={12} strokeWidth={3} />}
                     </span>
-                    <span style={{ flex: 1, minWidth: 0 }}>{l.title}</span>
+                    <span style={{ flex: 1, minWidth: 0 }}>
+                      {l.title}
+                      {locked && <span className="sr-only"> (locked)</span>}
+                    </span>
+                    <span className="row-badges">
+                      {q && (
+                        <span className={`mini-badge${q.passed ? ' ok' : ''}`} title={q.passed ? 'Quiz passed' : 'Has a quiz'}>
+                          📝
+                        </span>
+                      )}
+                      {pr && (
+                        <span className={`mini-badge${pr.status === 'approved' ? ' ok' : ''}`} title={pr.status ? `Practical: ${pr.status}` : 'Has a practical'}>
+                          📷
+                        </span>
+                      )}
+                    </span>
                     <span className="muted small">{l.durationSeconds ? clock(l.durationSeconds) : ''}</span>
                     {done && <span className="sr-only">(completed)</span>}
                   </Link>
@@ -196,6 +242,8 @@ export function LessonView({ data, demo, watermark }: { data: LessonPageData; de
             </div>
           ))}
         </section>
+        {quiz && !lockedBy && <LessonQuiz key={quiz.id} quiz={quiz} demo={demo} />}
+        <CourseStatus assessment={assessment} />
         <div style={{ display: 'flex', gap: 10 }}>
           {prev && (
             <Link className="btn btn-ghost" style={{ flex: 1 }} href={`/learn/${course.slug}/${prev.slug}`}>

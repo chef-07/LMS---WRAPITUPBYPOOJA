@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import { ComingSoon } from '@/components/ui/ComingSoon';
 
 const SECTIONS: Record<string, { title: string; phase: string; body: string }> = {
-  reviews: { title: 'Reviews', phase: 'Phase 4', body: 'Review practical submissions against a rubric: approve or ask for a redo.' },
   skills: { title: 'Skill matrix', phase: 'Phase 5', body: 'Who is certified for what, so you can assign orders in peak season.' },
   campaigns: { title: 'Campaigns', phase: 'Phase 5', body: 'Seasonal refreshers (Diwali, Rakhi, wedding season) with due dates and reminders.' },
   announcements: { title: 'Announcements', phase: 'Phase 6', body: 'Pinned notices on everyone’s dashboard, with read receipts.' },

@@ -1,5 +1,6 @@
 import 'server-only';
 import { cache } from 'react';
+import { getCourseAssessment, getLearnerPractical, getLearnerQuiz, getPending } from './assessment';
 import { demoCompleted, demoCourses, demoLastLesson, demoSchools, demoViewer } from './demo-data';
 import { isDemo } from './supabase/config';
 import { supabaseServer } from './supabase/server';
@@ -76,7 +77,8 @@ type DbCourse = {
   modules: DbModule[];
 };
 
-const byRank = <T extends { rank: number }>(a: T, b: T) => a.rank - b.rank;
+/** Rank, then id: the same order the SQL lock rule uses. */
+const byRank = <T extends { rank: number; id: string }>(a: T, b: T) => a.rank - b.rank || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
 
 export const getCatalogue = cache(async (): Promise<Catalogue> => {
   if (isDemo) {
@@ -231,8 +233,19 @@ export async function getLessonPage(courseSlug: string, lessonSlug: string): Pro
     if (data) detail = { summary: data.summary, completionMode: data.completion_mode, minWatchPct: Number(data.min_watch_pct) };
   }
 
+  const viewer = await getViewer();
+  if (!viewer) return null;
+  const [quiz, practical, assessment] = await Promise.all([
+    getLearnerQuiz(summary.id, summary.slug, viewer),
+    getLearnerPractical(summary.id, summary.slug, viewer),
+    getCourseAssessment(course, viewer),
+  ]);
+
   const p = cat.lessonProgress[summary.id];
   return {
+    quiz,
+    practical,
+    assessment,
     course,
     lesson: {
       id: summary.id,
@@ -286,6 +299,8 @@ export async function getDashboard(): Promise<DashboardData | null> {
     .filter((c) => c.lastActivityAt && c.completedCount < c.lessonCount)
     .sort((a, b) => (b.lastActivityAt ?? '').localeCompare(a.lastActivityAt ?? ''));
 
+  const { pending, anySubmission } = await getPending(viewer);
+
   if (isDemo) {
     const now = Date.now();
     const upcoming: LiveSession[] = [
@@ -305,8 +320,9 @@ export async function getDashboard(): Promise<DashboardData | null> {
       streak: { current: 3, best: 6 },
       stats: { lessonsFinished: demoCompleted.size, learningSeconds: 125 * 60, xp: 150, rank: 3 },
       activity: lastSevenDays().map((day, i) => ({ day, minutes: minutes[i] ?? 0 })),
-      firstWeek: firstWeekSteps({ welcome: true }),
+      firstWeek: firstWeekSteps({ welcome: true, first_wrap: anySubmission }),
       continueCourses,
+      pending,
       upcoming,
       leaderboard,
       announcement: {
@@ -357,8 +373,9 @@ export async function getDashboard(): Promise<DashboardData | null> {
     streak: { current: streakRes.data?.current_streak ?? 0, best: streakRes.data?.best_streak ?? 0 },
     stats: { lessonsFinished, learningSeconds: Math.round(minutesTotal * 60), xp, rank: rankIdx >= 0 ? rankIdx + 1 : null },
     activity: days.map((day) => ({ day, minutes: Math.round(perDay[day] ?? 0) })),
-    firstWeek: firstWeekSteps({ profile: !!(me?.avatar_url && me.department), welcome, conduct }),
+    firstWeek: firstWeekSteps({ profile: !!(me?.avatar_url && me.department), welcome, conduct, first_wrap: anySubmission }),
     continueCourses,
+    pending,
     upcoming: (liveRes.data ?? []).map((s) => ({ id: s.id, title: s.title, host: s.host_name, startsAt: s.starts_at, endsAt: s.ends_at })),
     leaderboard: board.slice(0, 10).map((r) => ({ userId: r.user_id, name: r.full_name, department: r.department, xp: Number(r.xp) })),
     announcement: ann ? { id: ann.id, title: ann.title, body: ann.body, createdAt: ann.created_at } : null,

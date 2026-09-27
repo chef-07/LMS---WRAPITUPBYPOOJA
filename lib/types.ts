@@ -101,6 +101,9 @@ export type LessonPageData = {
   };
   prev: LessonSummary | null;
   next: LessonSummary | null;
+  quiz: LearnerQuiz | null;
+  practical: LearnerPractical | null;
+  assessment: CourseAssessment;
 };
 
 export type LiveSession = {
@@ -133,4 +136,61 @@ export type DashboardData = {
   upcoming: LiveSession[];
   leaderboard: LeaderRow[];
   announcement: Announcement | null;
+  pending: PendingItem[];
 };
+
+/* ── Assessment (Phase 4) ──────────────────────────────────────────────── */
+
+export type SubmissionStatus = 'submitted' | 'approved' | 'redo';
+
+/** A quiz as a learner receives it: no answer key. */
+export type LearnerQuiz = {
+  id: string;
+  passPct: number;
+  isRequired: boolean;
+  questions: { id: string; kind: 'mcq' | 'scenario'; prompt: string; options: { id: string; label: string }[] }[];
+  passed: boolean;
+  attempts: number;
+  best: { score: number; total: number } | null;
+};
+
+export type PracticalReview = {
+  scores: Record<string, number>;
+  comment: string;
+  decision: 'approved' | 'redo';
+  reviewerName: string;
+  createdAt: string;
+};
+
+export type PracticalSubmission = {
+  id: string;
+  status: SubmissionStatus;
+  createdAt: string;
+  photoUrls: string[];
+  link: string | null;
+  note: string;
+  review: PracticalReview | null;
+};
+
+export type LearnerPractical = {
+  id: string;
+  brief: string;
+  rubric: { key: string; label: string }[];
+  /** Newest first. */
+  submissions: PracticalSubmission[];
+};
+
+export type CourseAssessment = {
+  quizByLesson: Record<string, { quizId: string; required: boolean; passed: boolean }>;
+  practicalByLesson: Record<string, { assignmentId: string; status: SubmissionStatus | null }>;
+  /** lesson id → title of the module whose quiz is blocking it. */
+  lockedBy: Record<string, string>;
+  certificate: { code: string; issuedAt: string } | null;
+  progress: {
+    lessons: { done: number; total: number };
+    quizzes: { done: number; total: number };
+    practicals: { done: number; total: number };
+  };
+};
+
+export type PendingItem = { id: string; kind: 'redo' | 'quiz'; title: string; detail: string; href: string };

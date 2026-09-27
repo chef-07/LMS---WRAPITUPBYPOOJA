@@ -68,6 +68,11 @@ export function CourseGrid({ schools, cards, initialSchool }: { schools: School[
                 <span className={`chip tone-${c.school.tone}`} style={{ alignSelf: 'flex-start' }}>
                   {c.level}
                 </span>
+                {c.isDraft && (
+                  <span className="chip draft" style={{ alignSelf: 'flex-start' }}>
+                    Draft · only faculty see this
+                  </span>
+                )}
                 <h3>{c.title}</h3>
                 <div className="course-meta">
                   <span>{c.lessonCount} lessons</span>

@@ -55,6 +55,8 @@ export type Course = {
   schoolSlug: string;
   instructor: string;
   coverVideoId: string | null;
+  /** Only faculty ever receive drafts (RLS hides them from members). */
+  isDraft: boolean;
   modules: Module[];
 };
 
@@ -73,6 +75,7 @@ export type CourseCard = {
   remainingSeconds: number;
   lastLesson: { slug: string; title: string } | null;
   lastActivityAt: string | null;
+  isDraft: boolean;
 };
 
 export type Lesson = {

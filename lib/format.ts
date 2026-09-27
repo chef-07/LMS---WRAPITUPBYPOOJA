@@ -45,3 +45,15 @@ export function shortDate(iso: string): { day: string; month: string; time: stri
     time: new Intl.DateTimeFormat('en-IN', { hour: 'numeric', minute: '2-digit', timeZone: tz }).format(d),
   };
 }
+
+/** "12:30" → 750, "1:02:03" → 3723, "45" → 2700 (plain number = minutes). Null when unreadable. */
+export function parseClock(input: string): number | null {
+  const s = input.trim();
+  if (!s) return null;
+  if (/^\d+$/.test(s)) return Number(s) * 60;
+  const parts = s.split(':');
+  if (parts.length < 2 || parts.length > 3 || parts.some((p) => !/^\d+$/.test(p))) return null;
+  const nums = parts.map(Number);
+  if (nums.slice(1).some((n) => n >= 60)) return null;
+  return nums.reduce((acc, n) => acc * 60 + n, 0);
+}

@@ -71,6 +71,7 @@ type DbCourse = {
   cover_video_id: string | null;
   departments: Department[];
   rank: number;
+  is_published: boolean;
   schools: { slug: string } | null;
   modules: DbModule[];
 };
@@ -102,9 +103,9 @@ export const getCatalogue = cache(async (): Promise<Catalogue> => {
     sb
       .from('courses')
       .select(
-        'id, slug, title, summary, level, instructor_name, cover_video_id, departments, rank, schools(slug), modules(id, title, rank, lessons(id, slug, title, duration_seconds, video_id, rank, is_published))',
+        'id, slug, title, summary, level, instructor_name, cover_video_id, departments, rank, is_published, schools(slug), modules(id, title, rank, lessons(id, slug, title, duration_seconds, video_id, rank, is_published))',
       )
-      .eq('is_published', true)
+      // Members only ever get published courses (RLS); faculty also get drafts to preview.
       .order('rank'),
     sb.from('lesson_progress').select('lesson_id, position_seconds, watch_seconds, is_completed, manually_incomplete').eq('user_id', viewer?.id ?? ''),
     sb.from('enrollments').select('course_id, last_activity_at, lessons:last_lesson_id(slug)').eq('user_id', viewer?.id ?? ''),
@@ -138,6 +139,7 @@ export const getCatalogue = cache(async (): Promise<Catalogue> => {
     level: c.level,
     instructor: c.instructor_name,
     coverVideoId: c.cover_video_id,
+    isDraft: !c.is_published,
     schoolSlug: c.schools?.slug ?? '',
     modules: [...c.modules].sort(byRank).map((m) => ({
       id: m.id,
@@ -189,6 +191,7 @@ function toCard(c: Course, cat: Catalogue): CourseCard {
     remainingSeconds: lessons.filter((l) => !l.completed).reduce((s, l) => s + l.durationSeconds, 0),
     lastLesson: lastLesson ? { slug: lastLesson.slug, title: lastLesson.title } : null,
     lastActivityAt: cat.last[c.slug]?.at ?? null,
+    isDraft: c.isDraft,
   };
 }
 

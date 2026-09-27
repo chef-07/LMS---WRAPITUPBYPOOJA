@@ -56,6 +56,7 @@ export const demoCourses: Course[] = [
     schoolSlug: 'foundations',
     instructor: 'Pooja',
     coverVideoId: demoVideo,
+    isDraft: false,
     modules: [
       mod('m1', 'Our story', [
         ['brand-story', 'The WrapItUp story', 6],
@@ -76,6 +77,7 @@ export const demoCourses: Course[] = [
     schoolSlug: 'wrapping',
     instructor: 'Pooja',
     coverVideoId: demoVideo,
+    isDraft: false,
     modules: [
       mod('m3', 'Basics', [
         ['measure-and-cut', 'Measuring and cutting paper', 9],
@@ -97,6 +99,7 @@ export const demoCourses: Course[] = [
     schoolSlug: 'wrapping',
     instructor: 'Pooja',
     coverVideoId: demoVideo,
+    isDraft: false,
     modules: [
       mod('m5', 'Signature bows', [
         ['classic-bow', 'The classic bow', 8],
@@ -114,6 +117,7 @@ export const demoCourses: Course[] = [
     schoolSlug: 'hampers',
     instructor: 'Pooja',
     coverVideoId: demoVideo,
+    isDraft: false,
     modules: [
       mod('m6', 'Structure', [
         ['choosing-baskets', 'Choosing trays and baskets', 7],
@@ -134,6 +138,7 @@ export const demoCourses: Course[] = [
     schoolSlug: 'sales',
     instructor: 'Pooja',
     coverVideoId: demoVideo,
+    isDraft: false,
     modules: [
       mod('m8', 'Conversations', [
         ['first-reply', 'The first reply', 6],
@@ -151,6 +156,7 @@ export const demoCourses: Course[] = [
     schoolSlug: 'content',
     instructor: 'Pooja',
     coverVideoId: demoVideo,
+    isDraft: false,
     modules: [
       mod('m9', 'Shooting', [
         ['phone-setup', 'Phone setup and light', 8],
@@ -167,6 +173,7 @@ export const demoCourses: Course[] = [
     schoolSlug: 'operations',
     instructor: 'Pooja',
     coverVideoId: demoVideo,
+    isDraft: false,
     modules: [
       mod('m10', 'Packing', [
         ['fragile-items', 'Fragile items and glass jars', 10],

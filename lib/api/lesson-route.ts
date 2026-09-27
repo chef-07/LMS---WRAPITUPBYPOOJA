@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { isDemo } from '@/lib/supabase/config';
 import { supabaseServer } from '@/lib/supabase/server';
 
-export const lessonId = z.string().uuid();
+export const lessonId = z.guid();
 
 /** Reads a JSON body, including sendBeacon's text/plain one. */
 export async function readJson(req: Request): Promise<unknown> {

@@ -12,5 +12,6 @@ describe('badgesFor', () => {
     expect(earned({ 'quiz.passed': 5 })).toContain('quiz-whiz');
     expect(earned({ 'live.attended': 3, 'challenge.won': 1 })).toEqual(['live-learner', 'winner']);
     expect(earned({}, 7)).toEqual(['streak-7']);
+    expect(earned({ 'level.completed': 1 })).toEqual(['level-up']);
   });
 });

@@ -1,6 +1,6 @@
 import 'server-only';
 import { demoPracticals, demoQuizzes } from './demo-assessment';
-import { moduleLocks } from './locks';
+import { indiaToday, moduleLocks, type LockReason } from './locks';
 import { isDemo } from './supabase/config';
 import { supabaseServer } from './supabase/server';
 import type {
@@ -33,6 +33,7 @@ export async function getCourseAssessment(course: Course, viewer: Viewer): Promi
   let practicals: { id: string; lessonId: string }[] = [];
   const latestStatus = new Map<string, SubmissionStatus>();
   let certificate: CourseAssessment['certificate'] = null;
+  let startDate: string | null = null;
 
   if (isDemo) {
     quizzes = demoQuizzes
@@ -43,13 +44,15 @@ export async function getCourseAssessment(course: Course, viewer: Viewer): Promi
       .filter((p) => p.lessonId);
   } else {
     const sb = await supabaseServer();
-    const [qRes, aRes, pRes, sRes, cRes] = await Promise.all([
+    const [qRes, aRes, pRes, sRes, cRes, startRes] = await Promise.all([
       sb.from('quizzes').select('id, lesson_id, is_required, quiz_questions(id)').eq('course_id', course.id),
       sb.from('quiz_attempts').select('quiz_id').eq('user_id', viewer.id).eq('passed', true),
       sb.from('assignments').select('id, lesson_id').eq('course_id', course.id),
       sb.from('submissions').select('assignment_id, status, created_at').eq('user_id', viewer.id).eq('course_id', course.id).order('created_at', { ascending: false }),
       sb.from('certificates').select('code, issued_at').eq('user_id', viewer.id).eq('course_id', course.id).maybeSingle(),
+      sb.rpc('my_start_date'),
     ]);
+    startDate = typeof startRes.data === 'string' ? startRes.data : null;
     quizzes = (qRes.data ?? []).map((q) => ({
       id: q.id,
       lessonId: q.lesson_id,
@@ -69,19 +72,22 @@ export async function getCourseAssessment(course: Course, viewer: Viewer): Promi
   for (const p of practicals) if (lessons.some((l) => l.id === p.lessonId)) practicalByLesson[p.lessonId] = { assignmentId: p.id, status: latestStatus.get(p.id) ?? null };
 
   // Faculty preview everything; for everyone else the database enforces the same rule.
-  const lockedBy: Record<string, string> = {};
+  const lockedBy: Record<string, LockReason> = {};
   if (!isFaculty(viewer)) {
+    const today = indiaToday();
     const locks = moduleLocks(
       course.modules.map((m) => ({
         id: m.id,
         title: m.title,
+        dripDays: m.dripDays,
         requiredQuizIds: liveQuizzes.filter((q) => q.required && moduleOf.get(q.lessonId) === m.id).map((q) => q.id),
       })),
       passed,
+      { startDate: startDate ?? today, today },
     );
     for (const m of course.modules) {
-      const lock = locks[m.id];
-      if (lock?.locked && lock.blockedBy) for (const l of m.lessons) lockedBy[l.id] = lock.blockedBy;
+      const reason = locks[m.id]?.reason;
+      if (reason) for (const l of m.lessons) lockedBy[l.id] = reason;
     }
   }
 

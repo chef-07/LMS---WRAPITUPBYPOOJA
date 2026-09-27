@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { EmptyState } from '@/components/ui/primitives';
 import { YouTubePlayer, type ProgressReport } from '@/features/player/YouTubePlayer';
-import { clock, minutesLabel } from '@/lib/format';
+import { clock, minutesLabel, opensOnLabel } from '@/lib/format';
 import {
   applyProgress,
   hasWatchedEnough,
@@ -115,7 +115,15 @@ export function LessonView({
               <Lock size={36} color="var(--violet)" aria-hidden="true" />
               <h3 style={{ margin: '8px 0 4px' }}>This lesson is locked</h3>
               <p className="muted" style={{ margin: 0, maxWidth: 420 }}>
-                Pass the quiz in <b>{lockedBy}</b> to unlock it. Quizzes are in the right-hand column of that module’s lessons.
+                {lockedBy.kind === 'quiz' ? (
+                  <>
+                    Pass the quiz in <b>{lockedBy.module}</b> to unlock it. Quizzes are in the right-hand column of that module’s lessons.
+                  </>
+                ) : (
+                  <>
+                    This module opens on <b>{opensOnLabel(lockedBy.opensOn)}</b>, as part of your batch’s timetable. Finish the earlier modules in the meantime.
+                  </>
+                )}
               </p>
             </div>
           </div>
@@ -222,7 +230,8 @@ export function LessonView({
               <div className="syllabus-mod">{m.title}</div>
               {m.lessons.map((l) => {
                 const done = l.id === lesson.id ? state.completed : l.completed;
-                const locked = !!assessment.lockedBy[l.id];
+                const lockReason = assessment.lockedBy[l.id];
+                const locked = !!lockReason;
                 const q = assessment.quizByLesson[l.id];
                 const pr = assessment.practicalByLesson[l.id];
                 return (
@@ -238,6 +247,7 @@ export function LessonView({
                     <span style={{ flex: 1, minWidth: 0 }}>
                       {l.title}
                       {locked && <span className="sr-only"> (locked)</span>}
+                      {lockReason?.kind === 'drip' && <span className="muted small" style={{ display: 'block' }}>Opens {opensOnLabel(lockReason.opensOn)}</span>}
                     </span>
                     <span className="row-badges">
                       {q && (

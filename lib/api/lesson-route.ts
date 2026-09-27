@@ -23,7 +23,7 @@ export function bad(message: string, status = 400) {
 export function fromDbError(err: { code?: string; message: string }) {
   if (err.code === '42501') return bad('Not allowed.', 403);
   if (err.code === 'P0002') return bad('Lesson not found.', 404);
-  if (err.code === 'P0001') return bad(err.message, 422);
+  if (err.code === 'P0001') return bad(err.message.startsWith('This lesson is locked') ? 'This lesson is locked for now. The lesson page says when it opens.' : err.message, 422);
   return bad('Something went wrong. Try again.', 500);
 }
 

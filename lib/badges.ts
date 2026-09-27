@@ -8,6 +8,7 @@ const RULES: { key: string; emoji: string; title: string; how: string; test: (i:
   { key: 'quiz-whiz', emoji: '🧠', title: 'Quiz whiz', how: 'Pass 5 quizzes', test: (i) => (i.counts['quiz.passed'] ?? 0) >= 5 },
   { key: 'first-wrap', emoji: '📷', title: 'First wrap approved', how: 'Get a practical approved', test: (i) => (i.counts['assignment.approved'] ?? 0) >= 1 },
   { key: 'graduate', emoji: '🎓', title: 'Course graduate', how: 'Earn a certificate', test: (i) => (i.counts['course.completed'] ?? 0) >= 1 },
+  { key: 'level-up', emoji: '🪜', title: 'Level up', how: 'Finish a program level', test: (i) => (i.counts['level.completed'] ?? 0) >= 1 },
   { key: 'live-learner', emoji: '🎤', title: 'Live learner', how: 'Join 3 live trainings', test: (i) => (i.counts['live.attended'] ?? 0) >= 3 },
   { key: 'challenger', emoji: '🎀', title: 'Challenger', how: 'Enter a Wrap of the Week', test: (i) => (i.counts['challenge.entered'] ?? 0) >= 1 },
   { key: 'winner', emoji: '🏆', title: 'Wrap of the Week winner', how: 'Win a weekly challenge', test: (i) => (i.counts['challenge.won'] ?? 0) >= 1 },

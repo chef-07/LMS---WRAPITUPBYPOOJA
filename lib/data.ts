@@ -62,7 +62,7 @@ type DbLesson = {
   rank: number;
   is_published: boolean;
 };
-type DbModule = { id: string; title: string; rank: number; lessons: DbLesson[] };
+type DbModule = { id: string; title: string; drip_days: number; rank: number; lessons: DbLesson[] };
 type DbCourse = {
   id: string;
   slug: string;
@@ -106,7 +106,7 @@ export const getCatalogue = cache(async (): Promise<Catalogue> => {
     sb
       .from('courses')
       .select(
-        'id, slug, title, summary, level, instructor_name, cover_video_id, departments, rank, is_published, schools(slug), modules(id, title, rank, lessons(id, slug, title, duration_seconds, video_id, rank, is_published))',
+        'id, slug, title, summary, level, instructor_name, cover_video_id, departments, rank, is_published, schools(slug), modules(id, title, drip_days, rank, lessons(id, slug, title, duration_seconds, video_id, rank, is_published))',
       )
       // Members only ever get published courses (RLS); faculty also get drafts to preview.
       .order('rank'),
@@ -147,6 +147,7 @@ export const getCatalogue = cache(async (): Promise<Catalogue> => {
     modules: [...c.modules].sort(byRank).map((m) => ({
       id: m.id,
       title: m.title,
+      dripDays: m.drip_days,
       lessons: [...m.lessons]
         .filter((l) => l.is_published)
         .sort(byRank)

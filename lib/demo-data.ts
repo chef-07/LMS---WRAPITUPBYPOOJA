@@ -31,10 +31,11 @@ export const demoSchools: School[] = [
 
 type L = [slug: string, title: string, minutes: number];
 let lessonSeq = 0;
-function mod(id: string, title: string, lessons: L[]) {
+function mod(id: string, title: string, lessons: L[], dripDays = 0) {
   return {
     id,
     title,
+    dripDays,
     lessons: lessons.map(([slug, t, m]) => ({
       id: `l${++lessonSeq}`,
       slug,
@@ -126,7 +127,7 @@ export const demoCourses: Course[] = [
       mod('m7', 'Finish', [
         ['cellophane-wrap', 'Cellophane without creases', 11],
         ['diwali-theme', 'Diwali theme walkthrough', 15],
-      ]),
+      ], 7),
     ],
   },
   {

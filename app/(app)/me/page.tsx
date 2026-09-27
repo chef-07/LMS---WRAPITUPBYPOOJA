@@ -8,12 +8,13 @@ import { badgesFor } from '@/lib/badges';
 import { getMyProfile, longDate } from '@/lib/certificates';
 import { initials } from '@/lib/format';
 import { DEPARTMENTS } from '@/lib/types';
+import { getMyLevels, getMySkills } from '@/lib/university';
 
 export const metadata: Metadata = { title: 'My profile' };
 
 export default async function MePage() {
   const viewer = (await getViewer())!;
-  const p = await getMyProfile(viewer);
+  const [p, skills, levels] = await Promise.all([getMyProfile(viewer), getMySkills(viewer), getMyLevels(viewer)]);
   const badges = badgesFor({ counts: p.counts, bestStreak: p.bestStreak });
   const role = viewer.role === 'admin' ? 'Founder · Admin' : viewer.role === 'trainer' ? 'Trainer' : 'Team member';
   return (
@@ -54,6 +55,40 @@ export default async function MePage() {
             </div>
           ))}
         </div>
+      </section>
+      <section className="card">
+        <div className="card-head">
+          <h2>
+            Skills · {skills.filter((s) => s.state === 'signed').length} signed off
+          </h2>
+          <Link href="/programs">Programs</Link>
+        </div>
+        {skills.length === 0 ? (
+          <p className="muted small" style={{ margin: 0 }}>No skills set up for your team yet.</p>
+        ) : (
+          <div className="badge-grid">
+            {skills.map((s) => (
+              <div key={s.id} className={`badge${s.state === 'learning' ? ' locked' : ''}`} title={s.description}>
+                <span className="em" aria-hidden="true">
+                  {s.emoji}
+                </span>
+                <b className="small">{s.name}</b>
+                <div className="muted small">
+                  {s.state === 'signed' ? '✓ Signed off' : s.state === 'ready' ? 'Ready: ask a trainer to sign you off' : `${s.coursesDone}/${s.coursesTotal} courses`}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        {levels.length > 0 && (
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 14 }}>
+            {levels.map((l) => (
+              <span key={`${l.program}-${l.level}`} className="chip tone-turquoise">
+                {l.emoji} {l.program}: {l.level}
+              </span>
+            ))}
+          </div>
+        )}
       </section>
       <section className="card">
         <h2 style={{ marginTop: 0, fontSize: 16 }}>Certificates</h2>

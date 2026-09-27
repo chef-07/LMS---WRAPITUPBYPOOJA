@@ -3,6 +3,7 @@ import { getBellItems } from '@/lib/assessment';
 import { getCatalogue } from '@/lib/data';
 import { getTeamLifeBell } from '@/lib/team-life';
 import { isDemo } from '@/lib/supabase/config';
+import { getUniversityBell } from '@/lib/university';
 import type { Viewer } from '@/lib/types';
 import { BottomNav } from './BottomNav';
 import { GlobalSearch, type SearchEntry } from './GlobalSearch';
@@ -12,8 +13,8 @@ import { TopNav } from './TopNav';
 import { UserMenu } from './UserMenu';
 
 export async function AppShell({ viewer, children }: { viewer: Viewer; children: ReactNode }) {
-  const [{ schools, courses }, reviewBell, teamBell] = await Promise.all([getCatalogue(), getBellItems(viewer), getTeamLifeBell(viewer)]);
-  const bell = [...teamBell, ...reviewBell];
+  const [{ schools, courses }, reviewBell, teamBell, uniBell] = await Promise.all([getCatalogue(), getBellItems(viewer), getTeamLifeBell(viewer), getUniversityBell(viewer)]);
+  const bell = [...uniBell, ...teamBell, ...reviewBell];
   const index: SearchEntry[] = [
     ...schools.map((s) => ({ group: 'Schools' as const, title: `${s.emoji} ${s.name}`, sub: s.blurb, href: `/schools?school=${s.slug}` })),
     ...courses.map((c) => ({ group: 'Courses' as const, title: c.title, sub: c.summary, href: `/schools/${c.slug}` })),

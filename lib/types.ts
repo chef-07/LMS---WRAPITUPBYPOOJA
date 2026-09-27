@@ -1,3 +1,4 @@
+import type { LockReason } from './locks';
 import type { CompletionMode } from './progress';
 
 export type Role = 'admin' | 'trainer' | 'member';
@@ -43,6 +44,8 @@ export type LessonSummary = {
 export type Module = {
   id: string;
   title: string;
+  /** Opens this many days after the learner's start date (0 = straight away). */
+  dripDays: number;
   lessons: LessonSummary[];
 };
 
@@ -185,8 +188,8 @@ export type LearnerPractical = {
 export type CourseAssessment = {
   quizByLesson: Record<string, { quizId: string; required: boolean; passed: boolean }>;
   practicalByLesson: Record<string, { assignmentId: string; status: SubmissionStatus | null }>;
-  /** lesson id → title of the module whose quiz is blocking it. */
-  lockedBy: Record<string, string>;
+  /** lesson id → why it is locked (a quiz to pass, or the date it opens). */
+  lockedBy: Record<string, LockReason>;
   certificate: { code: string; issuedAt: string } | null;
   progress: {
     lessons: { done: number; total: number };

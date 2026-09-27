@@ -57,3 +57,8 @@ export function parseClock(input: string): number | null {
   if (nums.slice(1).some((n) => n >= 60)) return null;
   return nums.reduce((acc, n) => acc * 60 + n, 0);
 }
+
+/** "2026-10-05" → "Mon, 5 Oct" (a plain date, read without time zones). */
+export function opensOnLabel(isoDate: string): string {
+  return new Date(`${isoDate}T00:00:00Z`).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' });
+}

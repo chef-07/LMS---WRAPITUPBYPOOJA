@@ -11,13 +11,17 @@ import { Hero } from '@/features/dashboard/Hero';
 import { Leaderboard } from '@/features/dashboard/Leaderboard';
 import { Pending } from '@/features/dashboard/Pending';
 import { Upcoming } from '@/features/dashboard/Upcoming';
+import { BatchBanner } from '@/features/university/BatchBanner';
+import { CampaignCard } from '@/features/university/CampaignCard';
 import { getDashboard } from '@/lib/data';
 import { minutesLabel } from '@/lib/format';
 import { isDemo } from '@/lib/supabase/config';
+import { getMyBatch, getMyCampaigns } from '@/lib/university';
 
 export default async function DashboardPage() {
   const d = await getDashboard();
   if (!d) redirect('/login');
+  const [batch, campaigns] = await Promise.all([getMyBatch(d.viewer), getMyCampaigns(d.viewer)]);
 
   const top = d.continueCourses[0];
   const resume = top ? { href: top.lastLesson ? `/learn/${top.slug}/${top.lastLesson.slug}` : `/schools/${top.slug}`, courseTitle: top.title } : null;
@@ -42,8 +46,15 @@ export default async function DashboardPage() {
 
       <div className="content">
         <div className="col">
+          {batch && <BatchBanner b={batch} />}
           <FirstWeek steps={d.firstWeek} />
           <Pending items={d.pending} />
+          {campaigns
+            .filter((c) => c.done < c.total)
+            .slice(0, 2)
+            .map((c) => (
+              <CampaignCard key={c.id} c={c} />
+            ))}
           <ContinueRail courses={d.continueCourses} />
           <div className="grid-4">
             <StatTile icon={BookCheck} tone="turquoise" value={d.stats.lessonsFinished} label="Lessons finished" />

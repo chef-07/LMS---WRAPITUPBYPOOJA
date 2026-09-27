@@ -4,6 +4,7 @@ import {
   BarChart3,
   CalendarDays,
   ClipboardCheck,
+  GraduationCap,
   Grid3x3,
   LogOut,
   Megaphone,
@@ -24,6 +25,7 @@ import { useDismiss } from './useDismiss';
 
 const FACULTY_LINKS = [
   { href: '/admin', label: 'Studio', icon: Wand2, adminOnly: true },
+  { href: '/admin/programs', label: 'Programs', icon: GraduationCap, adminOnly: true },
   { href: '/admin/team', label: 'Team', icon: Users, adminOnly: false },
   { href: '/admin/reviews', label: 'Reviews', icon: ClipboardCheck, adminOnly: false },
   { href: '/admin/skills', label: 'Skill matrix', icon: Grid3x3, adminOnly: false },

@@ -34,7 +34,7 @@ export function dbError(err: { code?: string; message: string }): { ok: false; e
   if (err.code === '23505') return fail('That web address is already used. Pick another.');
   if (err.code === '23514') return fail('One of the values is not allowed. Check the form.');
   if (err.code === '42501') return fail('Only an admin can do that.');
-  if (err.code === 'P0001') return fail(err.message);
+  if (err.code === 'P0001') return fail(err.message.startsWith('This lesson is locked') ? 'This lesson is locked for now. The lesson page says when it opens.' : err.message);
   console.error(err);
   return fail('Could not save. Try again.');
 }

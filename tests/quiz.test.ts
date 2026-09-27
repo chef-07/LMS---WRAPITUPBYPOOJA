@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { normaliseCode } from '@/lib/certificate';
-import { moduleLocks } from '@/lib/locks';
+import { addDays, moduleLocks } from '@/lib/locks';
 import { gradeQuiz, isPass, quizProblems, type KeyedQuestion } from '@/lib/quiz';
 import { averageScore, toCriteria } from '@/lib/rubric';
 
@@ -51,23 +51,37 @@ describe('quizProblems', () => {
 
 describe('moduleLocks', () => {
   const mods = [
-    { id: 'm1', title: 'Basics', requiredQuizIds: ['qa'] },
-    { id: 'm2', title: 'Finishing', requiredQuizIds: [] },
-    { id: 'm3', title: 'Advanced', requiredQuizIds: ['qc'] },
-    { id: 'm4', title: 'Bonus', requiredQuizIds: [] },
+    { id: 'm1', title: 'Basics', requiredQuizIds: ['qa'], dripDays: 0 },
+    { id: 'm2', title: 'Finishing', requiredQuizIds: [], dripDays: 0 },
+    { id: 'm3', title: 'Advanced', requiredQuizIds: ['qc'], dripDays: 0 },
+    { id: 'm4', title: 'Bonus', requiredQuizIds: [], dripDays: 0 },
   ];
   test('everything after an unpassed required quiz is locked', () => {
     const l = moduleLocks(mods, new Set());
-    expect(l.m1).toEqual({ locked: false, blockedBy: null });
-    expect(l.m2).toEqual({ locked: true, blockedBy: 'Basics' });
-    expect(l.m4!.blockedBy).toBe('Basics');
+    expect(l.m1).toEqual({ locked: false, reason: null });
+    expect(l.m2).toEqual({ locked: true, reason: { kind: 'quiz', module: 'Basics' } });
+    expect(l.m4!.reason).toEqual({ kind: 'quiz', module: 'Basics' });
   });
   test('passing unlocks up to the next unpassed quiz', () => {
     const l = moduleLocks(mods, new Set(['qa']));
     expect(l.m2!.locked).toBe(false);
     expect(l.m3!.locked).toBe(false);
-    expect(l.m4).toEqual({ locked: true, blockedBy: 'Advanced' });
+    expect(l.m4).toEqual({ locked: true, reason: { kind: 'quiz', module: 'Advanced' } });
   });
+  test('drip: a module opens N days after the learner starts', () => {
+    const drip = [
+      { id: 'w1', title: 'Week 1', requiredQuizIds: [], dripDays: 0 },
+      { id: 'w2', title: 'Week 2', requiredQuizIds: [], dripDays: 7 },
+    ];
+    expect(moduleLocks(drip, new Set(), { startDate: '2026-09-28', today: '2026-10-04' }).w2).toEqual({ locked: true, reason: { kind: 'drip', opensOn: '2026-10-05' } });
+    expect(moduleLocks(drip, new Set(), { startDate: '2026-09-28', today: '2026-10-05' }).w2!.locked).toBe(false);
+    expect(moduleLocks(drip, new Set()).w2!.locked).toBe(false);
+  });
+  test('a quiz lock wins over a drip date', () => {
+    const l = moduleLocks([{ id: 'a', title: 'A', requiredQuizIds: ['q'], dripDays: 0 }, { id: 'b', title: 'B', requiredQuizIds: [], dripDays: 30 }], new Set(), { startDate: '2026-01-01', today: '2026-01-02' });
+    expect(l.b!.reason).toEqual({ kind: 'quiz', module: 'A' });
+  });
+  test('addDays crosses months', () => expect(addDays('2026-01-28', 7)).toBe('2026-02-04'));
 });
 
 describe('rubric and certificates', () => {

@@ -1,0 +1,44 @@
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { PageHeader } from '@/components/shell/PageHeader';
+import { ProgressBar } from '@/components/ui/primitives';
+import { LessonView } from '@/features/lesson/LessonView';
+import { getLessonPage, getViewer } from '@/lib/data';
+import { coursePercent } from '@/lib/progress';
+import { isDemo } from '@/lib/supabase/config';
+
+type Params = { params: Promise<{ course: string; lesson: string }> };
+
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const p = await params;
+  const data = await getLessonPage(p.course, p.lesson);
+  return { title: data?.lesson.title ?? 'Lesson' };
+}
+
+export default async function LessonPage({ params }: Params) {
+  const p = await params;
+  const [data, viewer] = await Promise.all([getLessonPage(p.course, p.lesson), getViewer()]);
+  if (!data || !viewer) notFound();
+  const all = data.course.modules.flatMap((m) => m.lessons);
+  const done = all.filter((l) => l.completed).length;
+
+  return (
+    <div className="page">
+      <PageHeader
+        title={data.lesson.title}
+        crumbs={[{ label: 'Schools', href: '/schools' }, { label: data.course.title, href: `/schools/${data.course.slug}` }, { label: data.lesson.title }]}
+        actions={
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span className="muted small">
+              {done} of {all.length} complete
+            </span>
+            <div style={{ width: 120 }}>
+              <ProgressBar pct={coursePercent(done, all.length)} label="Course progress" />
+            </div>
+          </div>
+        }
+      />
+      <LessonView key={data.lesson.id} data={data} demo={isDemo} watermark={`${viewer.fullName} · ${viewer.email}`} />
+    </div>
+  );
+}

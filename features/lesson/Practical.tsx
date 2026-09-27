@@ -2,24 +2,13 @@
 import { Camera, CheckCircle2, Clock, Link2, RotateCcw, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useAction } from '@/components/ui/useAction';
+import { toJpeg } from '@/lib/image';
 import { submitPractical } from '@/features/assessment/actions';
 import { SCORE_LABELS, averageScore } from '@/lib/rubric';
 import { supabaseBrowser } from '@/lib/supabase/browser';
 import type { LearnerPractical, PracticalSubmission } from '@/lib/types';
 
 const MAX_PHOTOS = 5;
-
-/** Phone photos are 3–8 MB; a 1600px JPEG is ~300 KB and plenty for review. */
-async function toJpeg(file: File): Promise<Blob> {
-  const bmp = await createImageBitmap(file);
-  const scale = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
-  const canvas = document.createElement('canvas');
-  canvas.width = Math.round(bmp.width * scale);
-  canvas.height = Math.round(bmp.height * scale);
-  canvas.getContext('2d')!.drawImage(bmp, 0, 0, canvas.width, canvas.height);
-  bmp.close();
-  return new Promise((resolve, reject) => canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('resize failed'))), 'image/jpeg', 0.85));
-}
 
 export function Practical({ practical, viewerId, demo }: { practical: LearnerPractical; viewerId: string; demo: boolean }) {
   const latest = practical.submissions[0] ?? null;

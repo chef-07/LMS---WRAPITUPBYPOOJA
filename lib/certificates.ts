@@ -25,6 +25,8 @@ export async function verifyCertificate(input: string): Promise<VerifiedCertific
 }
 
 export type MyProfile = {
+  counts: Record<string, number>;
+  bestStreak: number;
   xp: number;
   lessonsDone: number;
   quizzesPassed: number;
@@ -35,6 +37,8 @@ export type MyProfile = {
 export async function getMyProfile(viewer: Viewer): Promise<MyProfile> {
   if (isDemo) {
     return {
+      counts: { 'lesson.completed': 3, 'challenge.entered': 1 },
+      bestStreak: 6,
       xp: 150,
       lessonsDone: 3,
       quizzesPassed: 0,
@@ -43,13 +47,18 @@ export async function getMyProfile(viewer: Viewer): Promise<MyProfile> {
     };
   }
   const sb = await supabaseServer();
-  const [events, certs] = await Promise.all([
+  const [events, certs, streak] = await Promise.all([
     sb.from('activity_events').select('kind, xp').eq('user_id', viewer.id).gt('xp', 0).limit(10000),
     sb.from('certificates').select('code, issued_at, courses(title, slug)').eq('user_id', viewer.id).order('issued_at', { ascending: false }),
+    sb.rpc('my_streak').maybeSingle<{ current_streak: number; best_streak: number }>(),
   ]);
   const ev = events.data ?? [];
   const count = (k: string) => ev.filter((e) => e.kind === k).length;
+  const counts: Record<string, number> = {};
+  for (const e of ev) counts[e.kind] = (counts[e.kind] ?? 0) + 1;
   return {
+    counts,
+    bestStreak: streak.data?.best_streak ?? 0,
     xp: ev.reduce((s, e) => s + e.xp, 0),
     lessonsDone: count('lesson.completed'),
     quizzesPassed: count('quiz.passed'),

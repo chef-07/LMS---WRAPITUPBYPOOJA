@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { PageHeader } from '@/components/shell/PageHeader';
 import { EmptyState, StatTile } from '@/components/ui/primitives';
 import { getViewer } from '@/lib/data';
+import { badgesFor } from '@/lib/badges';
 import { getMyProfile, longDate } from '@/lib/certificates';
 import { initials } from '@/lib/format';
 import { DEPARTMENTS } from '@/lib/types';
@@ -13,6 +14,7 @@ export const metadata: Metadata = { title: 'My profile' };
 export default async function MePage() {
   const viewer = (await getViewer())!;
   const p = await getMyProfile(viewer);
+  const badges = badgesFor({ counts: p.counts, bestStreak: p.bestStreak });
   const role = viewer.role === 'admin' ? 'Founder · Admin' : viewer.role === 'trainer' ? 'Trainer' : 'Team member';
   return (
     <div className="page">
@@ -37,6 +39,22 @@ export default async function MePage() {
         <StatTile icon={HelpCircle} tone="sky" value={p.quizzesPassed} label="Quizzes passed" />
         <StatTile icon={Camera} tone="tangerine" value={p.practicalsApproved} label="Practicals approved" />
       </div>
+      <section className="card">
+        <h2 style={{ marginTop: 0, fontSize: 16 }}>
+          Badges · {badges.filter((b) => b.earned).length} of {badges.length}
+        </h2>
+        <div className="badge-grid">
+          {badges.map((b) => (
+            <div key={b.key} className={`badge${b.earned ? '' : ' locked'}`} title={b.how}>
+              <span className="em" aria-hidden="true">
+                {b.emoji}
+              </span>
+              <b className="small">{b.title}</b>
+              <div className="muted small">{b.earned ? 'Earned' : b.how}</div>
+            </div>
+          ))}
+        </div>
+      </section>
       <section className="card">
         <h2 style={{ marginTop: 0, fontSize: 16 }}>Certificates</h2>
         {p.certificates.length === 0 ? (

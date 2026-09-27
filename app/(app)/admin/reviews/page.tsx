@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { PageHeader } from '@/components/shell/PageHeader';
 import { EmptyState } from '@/components/ui/primitives';
 import { getReviewQueue, requireFacultyPage } from '@/lib/admin';
+import { getOpenQuestions } from '@/lib/team-life';
+import { MessageCircle } from 'lucide-react';
 import { initials } from '@/lib/format';
 import { DEPARTMENTS } from '@/lib/types';
 
@@ -18,7 +20,7 @@ function waited(iso: string): string {
 
 export default async function ReviewsPage() {
   await requireFacultyPage();
-  const queue = await getReviewQueue();
+  const [queue, questions] = await Promise.all([getReviewQueue(), getOpenQuestions()]);
   return (
     <div className="page">
       <PageHeader title="Reviews" crumbs={[{ label: 'Home', href: '/' }, { label: 'Reviews' }]} />
@@ -48,6 +50,31 @@ export default async function ReviewsPage() {
                 <span className="chip">
                   <Camera size={13} aria-hidden="true" /> {r.photoCount}
                 </span>
+                <ChevronRight size={18} className="muted" aria-hidden="true" />
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
+      <section className="card">
+        <div className="card-head">
+          <h2 style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <MessageCircle size={18} aria-hidden="true" /> Questions waiting for a trainer
+          </h2>
+          <span className="chip">{questions.length}</span>
+        </div>
+        {questions.length === 0 ? (
+          <p className="muted small" style={{ margin: 0 }}>Every lesson question has a trainer’s answer.</p>
+        ) : (
+          <div className="list">
+            {questions.map((q) => (
+              <Link key={q.id} href={q.href} className="list-row" style={{ color: 'inherit' }}>
+                <div className="grow">
+                  <div className="title">“{q.body}”</div>
+                  <div className="muted small">
+                    {q.author} · {q.lessonTitle} · {waited(q.createdAt)}
+                  </div>
+                </div>
                 <ChevronRight size={18} className="muted" aria-hidden="true" />
               </Link>
             ))}

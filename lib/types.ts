@@ -104,6 +104,7 @@ export type LessonPageData = {
   quiz: LearnerQuiz | null;
   practical: LearnerPractical | null;
   assessment: CourseAssessment;
+  qa: import('./team-life').QaThread[];
 };
 
 export type LiveSession = {
@@ -137,6 +138,7 @@ export type DashboardData = {
   leaderboard: LeaderRow[];
   announcement: Announcement | null;
   pending: PendingItem[];
+  challenge: { title: string } | null;
 };
 
 /* ── Assessment (Phase 4) ──────────────────────────────────────────────── */

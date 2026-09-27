@@ -1,8 +1,28 @@
-import { FolderOpen } from 'lucide-react';
-import { ComingSoon } from '@/components/ui/ComingSoon';
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { PageHeader } from '@/components/shell/PageHeader';
+import { SopBrowser } from '@/features/sops/SopBrowser';
+import { getViewer } from '@/lib/data';
+import { getSopLibrary } from '@/lib/team-life';
 
-export const metadata = { title: 'SOP Library' };
+export const metadata: Metadata = { title: 'SOP Library' };
 
-export default function SopsPage() {
-  return <ComingSoon title="SOP Library" icon={FolderOpen} phase="Phase 6" body="Step cards, material lists, price sheets and WhatsApp reply templates with a copy button, ready on your phone at the work table." />;
+export default async function SopsPage() {
+  const [folders, viewer] = await Promise.all([getSopLibrary(), getViewer()]);
+  return (
+    <div className="page">
+      <PageHeader
+        title="SOP Library"
+        crumbs={[{ label: 'Home', href: '/' }, { label: 'SOP Library' }]}
+        actions={
+          viewer?.role === 'admin' && (
+            <Link className="btn btn-ghost" href="/admin/sops">
+              Manage library
+            </Link>
+          )
+        }
+      />
+      <SopBrowser folders={folders} />
+    </div>
+  );
 }

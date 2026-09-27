@@ -1,8 +1,9 @@
-import { BookCheck, Clock, Flame, Megaphone, Trophy } from 'lucide-react';
+import { BookCheck, Clock, Flame, Trophy } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { PageHeader } from '@/components/shell/PageHeader';
 import { Card, StatTile } from '@/components/ui/primitives';
+import { AnnouncementStrip } from '@/features/dashboard/AnnouncementStrip';
 import { ActivityChart } from '@/features/dashboard/ActivityChart';
 import { ContinueRail } from '@/features/dashboard/ContinueRail';
 import { FirstWeek } from '@/features/dashboard/FirstWeek';
@@ -12,6 +13,7 @@ import { Pending } from '@/features/dashboard/Pending';
 import { Upcoming } from '@/features/dashboard/Upcoming';
 import { getDashboard } from '@/lib/data';
 import { minutesLabel } from '@/lib/format';
+import { isDemo } from '@/lib/supabase/config';
 
 export default async function DashboardPage() {
   const d = await getDashboard();
@@ -34,19 +36,7 @@ export default async function DashboardPage() {
         }
       />
 
-      {d.announcement && (
-        <div className="announce" role="note">
-          <span className="announce-icon">
-            <Megaphone size={18} aria-hidden="true" />
-          </span>
-          <div style={{ minWidth: 0 }}>
-            <b>{d.announcement.title}</b>
-            <div className="small" style={{ color: 'var(--ink-2)' }}>
-              {d.announcement.body}
-            </div>
-          </div>
-        </div>
-      )}
+      {d.announcement && <AnnouncementStrip a={d.announcement} demo={isDemo} />}
 
       <Hero name={d.viewer.fullName} streak={d.streak.current} resume={resume} />
 
@@ -69,13 +59,13 @@ export default async function DashboardPage() {
         <aside className="col rail" aria-label="At a glance">
           <Upcoming sessions={d.upcoming} />
           <Leaderboard rows={d.leaderboard} viewerId={d.viewer.id} viewerDept={d.viewer.department} />
-          <div className="promo">
+          <Link href="/showcase" className="promo" style={{ display: 'block' }}>
             <h3>🎀 Wrap of the Week</h3>
             <p className="small" style={{ margin: 0 }}>
-              {above ? `You're ${(above.xp - myXp + 1).toLocaleString('en-IN')} XP from ${above.name}. ` : ''}
-              Post your best wrap in Showcase for +40 XP.
+              {d.challenge ? `This week: “${d.challenge.title}”. Enter for +40 XP.` : 'Share your best work on the Showcase wall.'}
+              {above ? ` You're ${(above.xp - myXp + 1).toLocaleString('en-IN')} XP from ${above.name}.` : ''}
             </p>
-          </div>
+          </Link>
         </aside>
       </div>
     </div>

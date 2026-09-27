@@ -4,7 +4,7 @@ The private training university for the **WrapItUpByPooja** team: wrapping and p
 
 The full product plan is in [`docs/PLAN.md`](docs/PLAN.md).
 
-## What works today (Phases 1–2 and 4)
+## What works today (Phases 1, 2, 4 and 6)
 
 - **App shell.** Top navigation pills, "Search anything" (⌘K), notifications bell, avatar menu (with admin links for Pooja and trainers), and a bottom tab bar on phones.
 - **Dashboard.** Pinned announcement, hero with day streak and greeting, *Your first week* checklist, *Pick up where you left off*, stat tiles, learning-activity chart, *Upcoming* live sessions, leaderboard (All / My team), Wrap-of-the-Week card.
@@ -37,7 +37,19 @@ The full product plan is in [`docs/PLAN.md`](docs/PLAN.md).
   - A **My profile** page lists certificates and XP.
   - The dashboard shows **Pending for you**, and the bell shows reviews and the trainer queue.
 
-Programs, Showcase, Live, SOP Library and the remaining admin pages are placeholders that say which phase delivers them.
+- **SOP Library** (`/sops`): folders of reply templates, step-by-step checklists, links and files (PDF or image).
+  - Templates have **Copy** and **WhatsApp** buttons, and checklists can be ticked off.
+  - A card can link to a lesson at a timestamp. Everything is searchable.
+  - A folder can be limited to certain departments. Managed at `/admin/sops`.
+- **Announcements** (`/admin/announcements`): posts are pinned to every dashboard until staff tap **Got it**. You see who has read each one.
+- **Live trainings** (`/live`): schedule a Meet or Zoom session. The join button opens 15 minutes before; joining records attendance (+20 XP).
+  - Trainers can tick attendance and attach the recording as a lesson.
+- **Showcase and Wrap of the Week** (`/showcase`): a wall of the team's best wraps with reactions.
+  - Weekly challenges: +40 XP for entering, and Pooja picks the winner (+100 XP and a trophy on the wall).
+- **Lesson Q&A**: questions and answers on every lesson's Discussion tab. Unanswered questions appear for trainers under **Reviews**.
+- **Badges** on My profile. The bell also shows new announcements, sessions starting soon, the open challenge, and replies to your questions.
+
+Programs and the remaining admin pages (Skill matrix, Campaigns, Cohorts, Reports) are placeholders that say which phase delivers them.
 
 ## Run it
 

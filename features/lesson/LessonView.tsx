@@ -16,12 +16,29 @@ import {
 } from '@/lib/progress';
 import type { LessonPageData } from '@/lib/types';
 import { CourseStatus } from './CourseStatus';
+import { Discussion } from './Discussion';
 import { LessonQuiz } from './LessonQuiz';
 import { Practical } from './Practical';
 
-type Tab = 'notes' | 'files' | 'discussion' | 'assignment';
+export type Tab = 'notes' | 'files' | 'discussion' | 'assignment';
 
-export function LessonView({ data, demo, watermark, viewerId }: { data: LessonPageData; demo: boolean; watermark: string; viewerId: string }) {
+export function LessonView({
+  data,
+  demo,
+  watermark,
+  viewerId,
+  isFaculty,
+  initialTab,
+  startAtOverride,
+}: {
+  data: LessonPageData;
+  demo: boolean;
+  watermark: string;
+  viewerId: string;
+  isFaculty: boolean;
+  initialTab: Tab | null;
+  startAtOverride: number | null;
+}) {
   const { course, lesson, prev, next, quiz, practical, assessment } = data;
   const lockedBy = assessment.lockedBy[lesson.id] ?? null;
   const [duration, setDuration] = useState(lesson.durationSeconds);
@@ -33,7 +50,7 @@ export function LessonView({ data, demo, watermark, viewerId }: { data: LessonPa
 
   const [state, setState] = useState<ProgressState>(data.progress);
   const [message, setMessage] = useState<string | null>(null);
-  const [tab, setTab] = useState<Tab>(practical?.submissions[0]?.status === 'redo' ? 'assignment' : 'notes');
+  const [tab, setTab] = useState<Tab>(initialTab ?? (practical?.submissions[0]?.status === 'redo' ? 'assignment' : 'notes'));
 
   const api = `/api/lessons/${lesson.id}`;
 
@@ -87,7 +104,7 @@ export function LessonView({ data, demo, watermark, viewerId }: { data: LessonPa
   const canComplete = lesson.completionMode === 'manual' || hasWatchedEnough(state, rules);
   const lessons = course.modules.flatMap((m) => m.lessons);
   const doneCount = lessons.filter((l) => (l.id === lesson.id ? state.completed : l.completed)).length;
-  const startAt = resumePoint(data.progress.positionSeconds, duration);
+  const startAt = startAtOverride ?? resumePoint(data.progress.positionSeconds, duration);
 
   return (
     <div className="content">
@@ -163,7 +180,7 @@ export function LessonView({ data, demo, watermark, viewerId }: { data: LessonPa
               [
                 ['notes', 'Notes', NotebookPen],
                 ['files', 'Files', FileText],
-                ['discussion', 'Discussion', MessageCircle],
+                ['discussion', data.qa.length ? `Discussion (${data.qa.length})` : 'Discussion', MessageCircle],
                 ['assignment', practical ? 'Practical •' : 'Practical', Camera],
               ] as const
             ).map(([key, label, Icon]) => (
@@ -176,7 +193,7 @@ export function LessonView({ data, demo, watermark, viewerId }: { data: LessonPa
           <div role="tabpanel" style={{ paddingTop: 16 }}>
             {tab === 'notes' && <Notes lessonId={lesson.id} demo={demo} />}
             {tab === 'files' && <EmptyState icon={FileText} title="No files for this lesson" body="Material lists, templates and price sheets attached to this lesson will appear here." />}
-            {tab === 'discussion' && <EmptyState icon={MessageCircle} title="Ask a question" body="Lesson Q&A arrives with the Team Life phase. For now, ask your trainer on the team group." />}
+            {tab === 'discussion' && <Discussion lessonId={lesson.id} threads={data.qa} viewerId={viewerId} isFaculty={isFaculty} />}
             {tab === 'assignment' &&
               (practical ? (
                 <Practical practical={practical} viewerId={viewerId} demo={demo} />

@@ -12,6 +12,9 @@ import {
   User,
   Users,
   Wand2,
+  Video,
+  FolderOpen,
+  Trophy,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useRef, useState } from 'react';
@@ -26,6 +29,9 @@ const FACULTY_LINKS = [
   { href: '/admin/skills', label: 'Skill matrix', icon: Grid3x3, adminOnly: false },
   { href: '/admin/campaigns', label: 'Campaigns', icon: Sparkles, adminOnly: true },
   { href: '/admin/announcements', label: 'Announcements', icon: Megaphone, adminOnly: true },
+  { href: '/admin/live', label: 'Live sessions', icon: Video, adminOnly: false },
+  { href: '/admin/sops', label: 'SOP library', icon: FolderOpen, adminOnly: true },
+  { href: '/admin/challenges', label: 'Wrap of the Week', icon: Trophy, adminOnly: true },
   { href: '/admin/cohorts', label: 'Cohorts', icon: CalendarDays, adminOnly: true },
   { href: '/admin/reports', label: 'Reports', icon: BarChart3, adminOnly: false },
 ];

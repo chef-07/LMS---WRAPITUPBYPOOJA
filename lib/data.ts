@@ -286,7 +286,7 @@ function lastSevenDays(): string[] {
 
 function firstWeekSteps(done: Partial<Record<FirstWeekStep['key'], boolean>>): FirstWeekStep[] {
   return [
-    { key: 'profile', title: 'Say who you are', hint: 'Add your photo and department so the team knows you.', done: !!done.profile, cta: { label: 'Fill in your profile', href: '/me' } },
+    { key: 'profile', title: 'Say who you are', hint: 'Add a photo so the team knows who you are.', done: !!done.profile, cta: { label: 'Add your photo', href: '/settings' } },
     { key: 'welcome', title: 'Watch the WrapItUp story', hint: 'Six minutes on how we started and what we stand for.', done: !!done.welcome, cta: { label: 'Watch now', href: '/learn/welcome-to-wrapitup/brand-story' } },
     { key: 'conduct', title: 'Read the code of conduct & hygiene', hint: 'How we handle gifts, food items and customer homes.', done: !!done.conduct, cta: { label: 'Open lesson', href: '/learn/welcome-to-wrapitup/code-of-conduct' } },
     { key: 'first_wrap', title: 'Submit your first practice wrap', hint: 'A photo of one wrapped box. A trainer replies within a day.', done: !!done.first_wrap, cta: { label: 'Start practice', href: '/schools/perfect-box-wrap' } },
@@ -378,7 +378,7 @@ export async function getDashboard(): Promise<DashboardData | null> {
     streak: { current: streakRes.data?.current_streak ?? 0, best: streakRes.data?.best_streak ?? 0 },
     stats: { lessonsFinished, learningSeconds: Math.round(minutesTotal * 60), xp, rank: rankIdx >= 0 ? rankIdx + 1 : null },
     activity: days.map((day) => ({ day, minutes: Math.round(perDay[day] ?? 0) })),
-    firstWeek: firstWeekSteps({ profile: !!(me?.avatar_url && me.department), welcome, conduct, first_wrap: anySubmission, live: extras.attendedLive }),
+    firstWeek: firstWeekSteps({ profile: !!me?.avatar_url, welcome, conduct, first_wrap: anySubmission, live: extras.attendedLive }),
     continueCourses,
     pending,
     challenge: extras.challenge,

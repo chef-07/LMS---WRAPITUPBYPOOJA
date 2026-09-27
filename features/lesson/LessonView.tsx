@@ -113,7 +113,7 @@ export function LessonView({
           <div className="lock-gate">
             <div>
               <Lock size={36} color="var(--violet)" aria-hidden="true" />
-              <h3 style={{ margin: '8px 0 4px' }}>This lesson is locked</h3>
+              <h2 style={{ margin: '8px 0 4px', fontSize: 18 }}>This lesson is locked</h2>
               <p className="muted" style={{ margin: 0, maxWidth: 420 }}>
                 {lockedBy.kind === 'quiz' ? (
                   <>
@@ -143,7 +143,7 @@ export function LessonView({
           <div className="player-empty">
             <div>
               <PlayCircle size={40} color="var(--violet)" aria-hidden="true" />
-              <h3 style={{ margin: '8px 0 4px' }}>Video coming soon</h3>
+              <h2 style={{ margin: '8px 0 4px', fontSize: 18 }}>Video coming soon</h2>
               <p className="muted" style={{ margin: 0, maxWidth: 420 }}>
                 This lesson doesn’t have a YouTube link yet. An admin can paste one in Studio.
               </p>

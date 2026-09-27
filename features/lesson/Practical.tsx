@@ -17,9 +17,9 @@ export function Practical({ practical, viewerId, demo }: { practical: LearnerPra
   return (
     <div className="col" style={{ gap: 16 }}>
       <section className="card" style={{ background: 'var(--soft-2)' }}>
-        <h3 style={{ margin: '0 0 6px', display: 'flex', gap: 8, alignItems: 'center' }}>
+        <h2 style={{ margin: '0 0 6px', display: 'flex', gap: 8, alignItems: 'center', fontSize: 16 }}>
           <Camera size={18} color="var(--violet)" aria-hidden="true" /> Show your wrap
-        </h3>
+        </h2>
         <p style={{ margin: '0 0 10px', whiteSpace: 'pre-line' }}>{practical.brief}</p>
         <div className="muted small">
           A trainer scores: {practical.rubric.map((c) => c.label).join(' · ')}
@@ -41,7 +41,7 @@ export function Practical({ practical, viewerId, demo }: { practical: LearnerPra
 
       {practical.submissions.length > 0 && (
         <section>
-          <h3 style={{ fontSize: 15, margin: '0 0 8px' }}>Your submissions</h3>
+          <h2 style={{ fontSize: 15, margin: '0 0 8px' }}>Your submissions</h2>
           <ol className="timeline">
             {practical.submissions.map((s) => (
               <SubmissionItem key={s.id} s={s} rubric={practical.rubric} />
@@ -103,7 +103,7 @@ function SubmitForm({ practical, viewerId, demo, isRedo }: { practical: LearnerP
   const busy = uploading || pending;
   return (
     <section className="card form" aria-label="Submit your practical">
-      <h3 style={{ margin: 0, fontSize: 15 }}>{isRedo ? 'Try again' : 'Send your work'}</h3>
+      <h2 style={{ margin: 0, fontSize: 15 }}>{isRedo ? 'Try again' : 'Send your work'}</h2>
       <div className="photos">
         {files.map((f, i) => (
           <div key={f.url} className="photo-slot">

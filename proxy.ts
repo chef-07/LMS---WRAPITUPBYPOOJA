@@ -33,5 +33,6 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|icon.svg|manifest.webmanifest).*)'],
+  // Public, static files: the app icons, manifest, offline page and service worker.
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|icon.svg|apple-icon.png|icons/|manifest.webmanifest|offline.html|sw.js).*)'],
 };

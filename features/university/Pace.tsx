@@ -1,15 +1,7 @@
-import type { PaceStatus } from '@/lib/pace';
-
-const LABEL: Record<PaceStatus, string> = {
-  done: 'Done',
-  'on-track': 'On track',
-  behind: 'Behind',
-  overdue: 'Overdue',
-  'not-started': 'Not started',
-};
+import { PACE_LABEL, type PaceStatus } from '@/lib/pace';
 
 export function Pace({ status }: { status: PaceStatus }) {
-  return <span className={`pace ${status}`}>{LABEL[status]}</span>;
+  return <span className={`pace ${status}`}>{PACE_LABEL[status]}</span>;
 }
 
 export function daysLabel(days: number): string {

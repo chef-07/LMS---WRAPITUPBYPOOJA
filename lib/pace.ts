@@ -7,6 +7,14 @@ export function daysBetween(a: string, b: string): number {
 
 export type PaceStatus = 'done' | 'on-track' | 'behind' | 'overdue' | 'not-started';
 
+export const PACE_LABEL: Record<PaceStatus, string> = {
+  done: 'Done',
+  'on-track': 'On track',
+  behind: 'Behind',
+  overdue: 'Overdue',
+  'not-started': 'Not started',
+};
+
 /**
  * Where someone stands against a window: done at 100%, overdue once the
  * end date has passed, behind when more than 15 points under the

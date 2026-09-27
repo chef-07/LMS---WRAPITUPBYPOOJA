@@ -4,7 +4,7 @@ The private training university for the **WrapItUpByPooja** team: wrapping and p
 
 The full product plan is in [`docs/PLAN.md`](docs/PLAN.md).
 
-## What works today (Phases 1, 2, 4, 5 and 6)
+## What works today (Phases 1, 2 and 4–7)
 
 - **App shell.** Top navigation pills, "Search anything" (⌘K), notifications bell, avatar menu (with admin links for Pooja and trainers), and a bottom tab bar on phones.
 - **Dashboard.** Pinned announcement, hero with day streak and greeting, *Your first week* checklist, *Pick up where you left off*, stat tiles, learning-activity chart, *Upcoming* live sessions, leaderboard (All / My team), Wrap-of-the-Week card.
@@ -63,7 +63,17 @@ The full product plan is in [`docs/PLAN.md`](docs/PLAN.md).
   - Staff see a countdown card on the dashboard and in Programs, and a bell reminder in the last 7 days until they finish.
   - Pooja sees who is done, on track, behind or overdue.
 
-The Reports page is a placeholder for Phase 7.
+- **Reports** (`/admin/reports`, trainers and admins):
+  - Headline numbers: who learned this week, lessons and certificates in the last 30 days, practicals waiting for review.
+  - A weekly chart (with a table view), completion by team, and a table per course.
+  - A **Needs attention** list: missed batch or campaign deadlines, people behind, people quiet for weeks or not started, and practicals waiting 3+ days.
+  - **Download for Excel**: everyone's progress, course completion and the attention list as CSV files. Cells that look like formulas are made safe.
+- **Installable app.** Add it to the home screen on Android or iPhone and it opens full screen. With no connection it shows a friendly offline page. The service worker never stores private pages or data, only the app's own build files.
+- **Settings** (`/settings`): your name and profile photo (cropped and shrunk on the phone), video captions (Off, English or Hindi, remembered per device), and install help.
+- **Search anything** also finds programs and SOP cards.
+- **Accessibility:** axe finds no problems on any page at desktop or phone size, and no page scrolls sideways on a phone.
+
+**New here? Read [`docs/HANDOVER.md`](docs/HANDOVER.md)**, the plain-language guide for running the university day to day.
 
 ## Run it
 
@@ -76,7 +86,7 @@ Without Supabase keys the app runs in **demo mode** with sample courses. To prev
 
 ## Connect Supabase
 
-1. Create a Supabase project. Run `supabase/migrations/*.sql`, then `supabase/seed.sql`, in the SQL editor (or use `supabase db push`).
+1. Create a Supabase project. Run `supabase/migrations/*.sql`, then `supabase/seed.sql`, in the SQL editor (or use `supabase db push`). Optionally run `supabase/starter-content.sql` for starter SOP cards, skills and a draft program. It only fills empty tables, so it is safe to re-run.
 2. Under **Authentication → Providers**, enable Email (magic link) and Google.
 3. Under **Authentication → URL configuration**, add `https://<your-site>/auth/callback`.
 4. Copy `.env.example` to `.env.local` and fill in the URL and anon key. Do the same in Vercel's environment variables.

@@ -139,7 +139,7 @@ export function CampaignCard({ c, courses, todayIso }: { c: Campaign; courses: C
       {sorted.length === 0 ? (
         <p className="muted small" style={{ margin: 0 }}>Nobody in these teams yet.</p>
       ) : (
-        <div className="table-scroll">
+        <div className="table-scroll" role="region" aria-label={`${c.title} progress (scrolls sideways)`} tabIndex={0}>
           <table className="data-table">
             <thead>
               <tr>

@@ -18,6 +18,7 @@
 import { Maximize, Pause, Play, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { clock } from '@/lib/format';
+import { readCaptionPref } from '@/features/settings/prefs';
 
 type YTPlayer = {
   getCurrentTime: () => number;
@@ -128,6 +129,7 @@ export function YouTubePlayer({
 
     void loadApi().then(() => {
       if (disposed || !host.current || !window.YT) return;
+      const captions = readCaptionPref();
       player.current = new window.YT.Player(host.current, {
         videoId,
         playerVars: {
@@ -137,7 +139,9 @@ export function YouTubePlayer({
           fs: 0,
           rel: 0,
           playsinline: 1,
-          cc_load_policy: 0,
+          // Captions follow the choice in Settings (per device); YouTube shows them only if the video has that language.
+          cc_load_policy: captions === 'off' ? 0 : 1,
+          ...(captions === 'off' ? {} : { cc_lang_pref: captions }),
           hl: 'en',
           origin: window.location.origin,
         },

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDismiss } from './useDismiss';
 
-export type SearchEntry = { group: 'Courses' | 'Lessons' | 'Schools'; title: string; sub: string; href: string };
+export type SearchEntry = { group: 'Courses' | 'Lessons' | 'Schools' | 'Programs' | 'SOPs'; title: string; sub: string; href: string };
 
 /** "Search anything" (⌘K). Searches the catalogue the viewer can see. */
 export function GlobalSearch({ index }: { index: SearchEntry[] }) {
@@ -36,7 +36,7 @@ export function GlobalSearch({ index }: { index: SearchEntry[] }) {
     return index.filter((e) => `${e.title} ${e.sub}`.toLowerCase().includes(term)).slice(0, 12);
   }, [q, index]);
 
-  const groups = ['Schools', 'Courses', 'Lessons'] as const;
+  const groups = ['Programs', 'Schools', 'Courses', 'Lessons', 'SOPs'] as const;
   const ordered = groups.flatMap((g) => results.filter((r) => r.group === g));
 
   return (

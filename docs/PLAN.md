@@ -216,7 +216,7 @@ supabase/migrations, supabase/seed.sql   # seed: 6 schools, sample courses, demo
 4. ✅ **Assessment.** Quizzes (MCQ + scenario, pass gates), assignments + submissions + Reviews queue with rubric, module locking, certificates + `/verify`.
 5. ✅ **University structure.** Programs/levels, cohorts + drip, skills + Skill Matrix, campaigns.
 6. ✅ **Team life.** SOP library, announcements, Wrap of the Week + Showcase, live sessions, lesson discussion, notifications + email nudges, badges.
-7. **Polish.** Reports + CSV export, global search, PWA, accessibility and mobile pass, seed content, README handover guide for Pooja (how to upload unlisted videos and paste links).
+7. ✅ **Polish.** Reports + CSV export, global search, PWA, accessibility and mobile pass, seed content, README handover guide for Pooja (how to upload unlisted videos and paste links).
 
 ---
 

@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: 'Certificate' };
 export default async function VerifyPage({ params }: Params) {
   const cert = await verifyCertificate((await params).code);
   return (
-    <div className="verify-wrap">
+    <main className="verify-wrap">
       {cert ? (
         <div className="col" style={{ alignItems: 'center', width: '100%', maxWidth: 760 }}>
           <article className="certificate" aria-label="Certificate">
@@ -47,6 +47,6 @@ export default async function VerifyPage({ params }: Params) {
           </p>
         </div>
       )}
-    </div>
+    </main>
   );
 }

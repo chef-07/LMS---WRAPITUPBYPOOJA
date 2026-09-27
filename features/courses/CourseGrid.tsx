@@ -73,7 +73,7 @@ export function CourseGrid({ schools, cards, initialSchool }: { schools: School[
                     Draft · only faculty see this
                   </span>
                 )}
-                <h3>{c.title}</h3>
+                <h2>{c.title}</h2>
                 <div className="course-meta">
                   <span>{c.lessonCount} lessons</span>
                   <span>{minutesLabel(c.durationSeconds)}</span>

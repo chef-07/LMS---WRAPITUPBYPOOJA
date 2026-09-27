@@ -563,3 +563,34 @@ export async function getUniversityBell(viewer: Viewer): Promise<UniBellItem[]> 
   }
   return items;
 }
+
+/* ── Global search extras ───────────────────────────────────────────────── */
+
+export type SearchExtra = { group: 'Programs' | 'SOPs'; title: string; sub: string; href: string };
+
+/** Programs and SOP cards for "Search anything" (titles only; RLS decides who sees what). */
+export async function getSearchExtras(viewer: Viewer): Promise<SearchExtra[]> {
+  if (isDemo) {
+    return demoPrograms
+      .filter((p) => p.isPublished || isFaculty(viewer))
+      .map((p): SearchExtra => ({ group: 'Programs', title: `${p.emoji} ${p.title}`, sub: p.description, href: `/programs/${p.slug}` }))
+      .concat([
+        { group: 'SOPs', title: '💬 WhatsApp replies', sub: 'Copy, personalise the name, send.', href: '/sops/sf1' },
+        { group: 'SOPs', title: 'First reply to an enquiry', sub: 'WhatsApp replies', href: '/sops/sf1' },
+        { group: 'SOPs', title: 'Signature box wrap', sub: 'Wrapping step cards', href: '/sops/sf2' },
+        { group: 'SOPs', title: 'Before handing to courier', sub: 'Dispatch & courier', href: '/sops/sf3' },
+      ]);
+  }
+  const sb = await supabaseServer();
+  const [programs, folders] = await Promise.all([
+    sb.from('programs').select('slug, title, emoji, description, department').order('rank'),
+    sb.from('sop_folders').select('id, title, emoji, description, sop_items(title)').order('rank'),
+  ]);
+  const out: SearchExtra[] = [];
+  for (const p of programs.data ?? []) if (seesDept(viewer, p.department)) out.push({ group: 'Programs', title: `${p.emoji} ${p.title}`, sub: p.description, href: `/programs/${p.slug}` });
+  for (const f of (folders.data ?? []) as unknown as { id: string; title: string; emoji: string; description: string; sop_items: { title: string }[] }[]) {
+    out.push({ group: 'SOPs', title: `${f.emoji} ${f.title}`, sub: f.description, href: `/sops/${f.id}` });
+    for (const i of f.sop_items) out.push({ group: 'SOPs', title: i.title, sub: f.title, href: `/sops/${f.id}` });
+  }
+  return out;
+}

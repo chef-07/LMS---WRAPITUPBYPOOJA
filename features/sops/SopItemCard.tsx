@@ -11,7 +11,7 @@ export function SopItemCard({ item }: { item: SopItem }) {
         <span className="sop-kind" aria-hidden="true">
           {item.kind === 'template' ? <MessageCircle size={16} /> : item.kind === 'steps' ? <ListChecks size={16} /> : item.kind === 'link' ? <ExternalLink size={16} /> : <FileText size={16} />}
         </span>
-        <h3>{item.title}</h3>
+        <h2>{item.title}</h2>
       </header>
       {item.kind === 'template' && <Template text={item.body} />}
       {item.kind === 'steps' && <Steps text={item.body} id={item.id} />}

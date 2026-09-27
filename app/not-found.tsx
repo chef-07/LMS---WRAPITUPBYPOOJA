@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function NotFound() {
   return (
-    <div className="login-wrap">
+    <main className="login-wrap">
       <div className="card login-card" style={{ textAlign: 'center' }}>
         <div style={{ fontSize: 44 }} aria-hidden="true">
           🎁
@@ -13,6 +13,6 @@ export default function NotFound() {
           Back to dashboard
         </Link>
       </div>
-    </div>
+    </main>
   );
 }

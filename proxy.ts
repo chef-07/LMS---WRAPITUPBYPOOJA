@@ -24,7 +24,14 @@ export async function proxy(req: NextRequest) {
   const { data } = await sb.auth.getUser();
 
   const path = req.nextUrl.pathname;
-  const isPublic = path.startsWith('/login') || path.startsWith('/auth') || path.startsWith('/verify');
+  const isPublic =
+    path.startsWith('/login') ||
+    path.startsWith('/auth') ||
+    path.startsWith('/verify') ||
+    // Email links and the daily job: they check their own signature or key.
+    path.startsWith('/unsubscribe') ||
+    path.startsWith('/api/email/unsubscribe') ||
+    path.startsWith('/api/cron/');
   if (!data.user && !isPublic) {
     if (path.startsWith('/api/')) return NextResponse.json({ error: 'Sign in first.' }, { status: 401 });
     return NextResponse.redirect(new URL('/login', req.url));

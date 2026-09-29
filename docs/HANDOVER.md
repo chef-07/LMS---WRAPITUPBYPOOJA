@@ -28,6 +28,7 @@ access straight away, and their progress is kept.
 
 > The free email service sends only a few sign-in emails an hour. If
 > someone doesn't get theirs, ask them to use **Continue with Google**.
+> Setting up Resend (section 10) removes this limit.
 
 ## 3. Add a training video
 
@@ -105,5 +106,26 @@ dispatch, studio basics). Edit them to match how you work.
 | A video won't play | In YouTube, check it's **Unlisted** (not Private) and embedding is allowed. |
 | Someone can't sign in | Check they're invited with exactly that email in **Team**. Ask them to try **Continue with Google**. |
 | No internet | The app shows "You're offline". Tap **Try again** when back online. Progress is saved as they watch. |
+| Someone gets too many emails | They can switch each kind off in **Settings → Emails**, or with the link at the bottom of any email. |
+| A reminder email didn't arrive | Check **Settings → Team emails**: it shows the last problem, if there was one. Ask them to check spam once and mark it "Not spam". |
+
+## 10. Reminder emails
+
+The university emails your team so nobody forgets their training:
+
+- **Morning (about 9am):** only when something needs them. That could be a live session today, a module that opens today, a campaign due soon, a practical to redo, a quiz to pass, falling behind in their batch, or a week without learning. Trainers also hear about practicals waiting for review.
+  - Nobody gets more than one email a day, and ongoing reminders repeat at most every 3 days.
+- **Evening (about 7pm):** "keep your streak" when someone has learned 2 or more days in a row and hasn't learned yet today.
+- **Monday morning, for you:** last week's numbers and who could use a word from you.
+
+**Switching it on (one time, about 15 minutes):**
+
+1. Sign up at **resend.com** (free: 3,000 emails a month).
+2. In Resend, open **Domains → Add domain** and enter your shop's domain (for example `wrapitupbypooja.com`). Copy the records it shows into your domain's DNS settings (GoDaddy, Hostinger or similar), then press **Verify**. Until this is done, Resend only sends to your own email address.
+3. In Resend, open **API Keys → Create API key** and copy it.
+4. Send me the key, or add it yourself in **Vercel → wrapitup-university → Settings → Environment Variables** as `RESEND_API_KEY`. Also add `EMAIL_FROM`, for example `Wrap It Up University <university@wrapitupbypooja.com>`.
+5. Open **Settings → Team emails → Send me a sample**. If it arrives, you're done.
+
+While you're in Resend, the same key can also send the sign-in emails, which removes the "few sign-in emails an hour" limit. The steps are in `README.md → Turn on reminder emails`, step 5.
 
 Your technical details (database, hosting) are in `README.md → Live setup`.

@@ -4,7 +4,7 @@ The private training university for the **WrapItUpByPooja** team: wrapping and p
 
 The full product plan is in [`docs/PLAN.md`](docs/PLAN.md).
 
-## What works today (Phases 1, 2 and 4–7)
+## What works today (all seven phases)
 
 - **App shell.** Top navigation pills, "Search anything" (⌘K), notifications bell, avatar menu (with admin links for Pooja and trainers), and a bottom tab bar on phones.
 - **Dashboard.** Pinned announcement, hero with day streak and greeting, *Your first week* checklist, *Pick up where you left off*, stat tiles, learning-activity chart, *Upcoming* live sessions, leaderboard (All / My team), Wrap-of-the-Week card.
@@ -71,6 +71,15 @@ The full product plan is in [`docs/PLAN.md`](docs/PLAN.md).
 - **Installable app.** Add it to the home screen on Android or iPhone and it opens full screen. With no connection it shows a friendly offline page. The service worker never stores private pages or data, only the app's own build files.
 - **Settings** (`/settings`): your name and profile photo (cropped and shrunk on the phone), video captions (Off, English or Hindi, remembered per device), and install help.
 - **Search anything** also finds programs and SOP cards.
+- **Reminder emails** (sent through [Resend](https://resend.com) by two daily Vercel Cron jobs, `vercel.json`):
+  - **Morning, about 9am India time:** a reminder to anyone with something to act on: a live session today, a module that opens today, a campaign due in 7/3/1/0 days or overdue, a practical to redo, a required quiz not yet passed, falling behind in a batch, practicals waiting for review (trainers and admins), or no learning for a week.
+    - Time-bound items go out the same day. Other reminders wait 3 days between emails, and "pick up where you left off" waits a week, so nobody gets nagged daily.
+  - **Monday mornings:** a summary for admins with last week's numbers and the **Needs attention** list.
+  - **Evening, about 7pm:** a *keep your streak* email when a streak of 2 or more days would end tonight.
+  - Everyone can switch each kind off in **Settings**, or with the link at the bottom of every email (one-click unsubscribe supported).
+  - Admins see in Settings whether email is set up and how the last week went, and can send themselves a sample.
+  - Each person, kind and day is claimed in the database before sending, so a retried job never emails anyone twice; a failed send is retried by the next run.
+  - The job signs in with only a long random key (`CRON_SECRET`). The database stores just its SHA-256 hash, in a schema the API cannot reach.
 - **Accessibility:** axe finds no problems on any page at desktop or phone size, and no page scrolls sideways on a phone.
 
 **New here? Read [`docs/HANDOVER.md`](docs/HANDOVER.md)**, the plain-language guide for running the university day to day.
@@ -99,6 +108,18 @@ Without Supabase keys the app runs in **demo mode** with sample courses. To prev
 3. Open **Studio → your course → ✏️ on the lesson** and paste the link into the YouTube box. A green “Video found” confirms it.
 
 Unlisted videos can still be watched by anyone who has the link. The name tag on the player discourages sharing, and disabling a staff member's account removes their access to the university immediately.
+
+## Turn on reminder emails
+
+1. Create a free [Resend](https://resend.com) account. Add and verify your domain under **Domains**; until then Resend only delivers to your own address. Create an API key under **API Keys**.
+2. In Vercel → Project → Settings → Environment Variables (Production), add:
+   - `RESEND_API_KEY`: the key from step 1.
+   - `EMAIL_FROM`: for example `Wrap It Up University <university@wrapitupbypooja.com>` (an address on the verified domain).
+   - `CRON_SECRET`: a long random string (at least 32 characters, e.g. `openssl rand -hex 32`).
+3. Store the hash of the same `CRON_SECRET` in the database (SQL editor): `insert into private.cron_keys (hash, note) values (sha256(convert_to('<CRON_SECRET>', 'UTF8')), 'vercel');`
+4. Redeploy. Check with **Settings → Team emails → Send me a sample**, or with a dry run that sends nothing:
+   `curl -H "Authorization: Bearer <CRON_SECRET>" "https://<your-site>/api/cron/morning?dry=1"`
+5. Optional but recommended: in Supabase → **Authentication → Emails → SMTP settings**, send sign-in emails through Resend too (host `smtp.resend.com`, port 465, user `resend`, password = the API key). This removes Supabase's limit of a few sign-in emails an hour.
 
 ## Checks
 
